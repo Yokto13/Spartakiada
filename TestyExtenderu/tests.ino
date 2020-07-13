@@ -94,7 +94,7 @@ void loop()
   delay(10);
 }*/
 
-/*
+
 // Even pins are INPUTs, odd OUTPUTS.
 // 1 on an even pin will result in 1 on pin with number even+1.
 void setup()
@@ -103,9 +103,9 @@ void setup()
   Serial.println("Serial inited");
 
   pinMode(4, OUTPUT);
-  pinMode(5, OUTPUT);
+  pinMode(7, OUTPUT);
   digitalWrite(4, HIGH);
-  digitalWrite(5, HIGH);
+  digitalWrite(7, HIGH);
 
 
   for(int i = 0; i<8; ++i)
@@ -141,4 +141,3 @@ void loop()
   
   delay(10);
 }
-*/
