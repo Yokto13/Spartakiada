@@ -36,15 +36,15 @@ void loop()
   digitalWrite(4, LOW);
   Serial.println("LOW");
   delay(3000);
-}
-*/
+}*/
+
 
 
 // Check for signal on P6.
 /*
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("Serial inited");
 
   pinMode(4, OUTPUT);
@@ -68,7 +68,7 @@ void loop()
 /*
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("Serial inited");
 
   pinMode(4, OUTPUT);
@@ -92,26 +92,32 @@ void loop()
   }
   
   delay(10);
-}
-*/
+}*/
 
+/*
 // Even pins are INPUTs, odd OUTPUTS.
 // 1 on an even pin will result in 1 on pin with number even+1.
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("Serial inited");
 
   pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
   digitalWrite(4, HIGH);
+  digitalWrite(5, HIGH);
+
 
   for(int i = 0; i<8; ++i)
   {
+    Serial.println(i);
     if(i % 2 == 0)
       pcf.pinMode(i, INPUT);
     else
-      pcf.pinMode(i, OUTPUT);    
+      pcf.pinMode(i, OUTPUT);
+    delay(1000); 
   }
+  delay(3000);
 }
 
 void loop()
@@ -130,8 +136,9 @@ void loop()
       Serial.print("Output was set on LOW on pin ");
       Serial.println(i);
     }
+    delay(100);
   }
   
   delay(10);
 }
-
+*/
