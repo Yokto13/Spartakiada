@@ -41,7 +41,7 @@ byte end_address = 200;       // higher addresses unlock other modes, like 10-bi
 void setup(){
     Wire.begin();
 
-    Serial.begin(9600);                   // Changed from 19200 to 9600 which seems to be default for Arduino serial monitor
+    Serial.begin(115200);                   // Changed from 19200 to 9600 which seems to be default for Arduino serial monitor
     Serial.println("\nI2CScanner ready!");
 
     Serial.print("starting scanning of I2C bus from ");

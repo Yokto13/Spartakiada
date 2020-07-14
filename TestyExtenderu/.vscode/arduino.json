@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:uno",
+    "port": "COM11",
+    "sketch": "Softwarei2cTests\\softwarei2cTests.ino"
+}

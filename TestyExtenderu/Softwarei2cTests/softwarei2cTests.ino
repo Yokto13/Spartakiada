@@ -30,8 +30,10 @@ void loop()
   Serial.println("0 on pin 1");
   delay(5000);
 }*/
-
+/*
 // Read all pins.
+// The bin-number displayed should be the same as the one specified in 
+// setup.
 void setup() 
 {
   Serial.begin(115200);
@@ -41,8 +43,6 @@ void setup()
   WireS.write(0xAA); // 10101010
   WireS.endTransmission();
 }
-/* OOOLD school comment */
-/* Just for fun ;)*/
 void loop() 
 {
   WireS.requestFrom(ADR, 1);
@@ -57,6 +57,43 @@ void loop()
     }
   }
   Serial.println();
+
+  delay(500);
+}
+*/
+
+// Reads pin 4 and sets the same value on pin 3.
+void setup() 
+{
+  Serial.begin(115200);
+  WireS.begin(SDA, SCL); // sda, scl
+
+  WireS.beginTransmission(ADR);
+  WireS.write(0); // Set pins to LOW.
+  WireS.endTransmission();
+  Serial.println("Setup completed.");
+}
+void loop() 
+{
+  WireS.requestFrom(ADR, 1);
+  while(WireS.available())    // slave may send less than requested
+  {
+    byte c = WireS.read();    // receive a byte as character
+    if (c >> 4 & 1)
+    {
+      WireS.beginTransmission(ADR);
+      WireS.write(8);
+      WireS.endTransmission();
+      Serial.println("1 on pin 3");
+    }
+    else
+    {
+      WireS.beginTransmission(ADR);
+      WireS.write(0);
+      WireS.endTransmission();
+      Serial.println("0 on pin 3");
+    }    
+  }
 
   delay(500);
 }
