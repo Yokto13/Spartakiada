@@ -7,21 +7,27 @@
  *                        DOMINIK FARHAN                        *
  *                          JULY 2020                           *
  ****************************************************************/
-#include "Arduino.h"
-#include "PCF8574.h"
+#include <Arduino.h>
+#include <PCF8574.h>
+#include <SoftWire.h>
 
 // Set i2c address
 PCF8574 pcf(0x20);
 
+SoftWire i2c(A4,A5);
+
+// pcf(adress, sda, scl)
+//PCF8574 pcf(0x20, 14, 15);
+
 
 // Every 3 seconds alters between 1/0 on pin P3 and GPIO 4 on Arduino for LED.
-/*
 void setup()
 {
-  Serial.begin(9600);
+  pcf._wire = &i2c;
+  Serial.begin(115200);
   Serial.println("Serial inited");
 
-  pinMode(4, OUTPUT);
+  pinMode(7, OUTPUT);
 
   pcf.pinMode(3, OUTPUT);
 }
@@ -29,19 +35,18 @@ void setup()
 void loop()
 {
   pcf.digitalWrite(3, HIGH);
-  digitalWrite(4, HIGH);
+  digitalWrite(7, HIGH);
   Serial.println("HIGH");
   delay(3000);
   pcf.digitalWrite(3, LOW);
-  digitalWrite(4, LOW);
+  digitalWrite(7, LOW);
   Serial.println("LOW");
   delay(3000);
-}*/
+}
 
 
-
-// Check for signal on P6.
 /*
+// Check for signal on P6.
 void setup()
 {
   Serial.begin(115200);
@@ -63,9 +68,9 @@ void loop()
   delay(10);
 }*/
 
+/*
 // Put 1 on P2 when there is 1 at P5.
 // Basically combination of the two previous examples.
-/*
 void setup()
 {
   Serial.begin(115200);
@@ -94,7 +99,7 @@ void loop()
   delay(10);
 }*/
 
-
+/*
 // Even pins are INPUTs, odd OUTPUTS.
 // 1 on an even pin will result in 1 on pin with number even+1.
 void setup()
@@ -138,6 +143,58 @@ void loop()
     }
     delay(100);
   }
-  
-  delay(10);
 }
+*/
+
+/*
+// The previous example but rewritten using digitalReadAll method.
+// Even pins are INPUTs, odd OUTPUTS.
+// 1 on an even pin will result in 1 on pin with number even+1.
+byte Sensors[4];
+void setup()
+{
+  Serial.begin(115200);
+  Serial.println("Serial inited");
+
+  pinMode(4, OUTPUT);
+  pinMode(7, OUTPUT);
+  digitalWrite(4, HIGH);
+  digitalWrite(7, HIGH);
+
+
+  for(int i = 0; i<8; ++i)
+  {
+    Serial.println(i);
+    if(i % 2 == 0)
+      pcf.pinMode(i, INPUT);
+    else
+      pcf.pinMode(i, OUTPUT);
+    delay(1000); 
+  }
+  delay(3000);
+}
+
+void loop()
+{
+  PCF8574::DigitalInput di = pcf.digitalReadAll();
+  Sensors[0] = di.p0;
+  Sensors[1] = di.p2;
+  Sensors[2] = di.p4;
+  Sensors[3] = di.p6;
+  for(int i = 0; i < 4; i++)
+  {
+    if(Sensors[i] == HIGH)
+    {
+      pcf.digitalWrite(i * 2 + 1, HIGH);
+      Serial.print("Output was set on HIGH on pin ");
+      Serial.println(i * 2 + 1);
+    }
+    else
+    {
+      pcf.digitalWrite(i * 2 + 1, LOW);
+      Serial.print("Output was set on LOW on pin ");
+      Serial.println(i * 2 + 1);
+    }
+  }
+  delay(100);
+}*/

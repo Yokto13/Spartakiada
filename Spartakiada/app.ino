@@ -1,6 +1,5 @@
 // Prep for the app.
 
-#include <assert.h>
 #include <string.h>
 
 #include "Arduino.h"
