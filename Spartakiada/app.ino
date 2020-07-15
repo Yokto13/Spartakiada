@@ -1,9 +1,9 @@
 // Prep for the whole app.
-// It is preferable to have externders for motors and seperate externders for buttons.
+// It is preferable to have extenders for motors and seperate extenders for buttons.
 #include <SoftwareI2C.h>
 
 // We need 100 pins for buttons and 100 for motors.
-// If we decide to go for 'only externders' version, we will need: 2 * ceil(100/8) = 26
+// If we decide to go for 'only extenders' version, we will need: 2 * ceil(100/8) = 26
 // Alternatively it should be also feasible to go for 24 etenders 12/12 for buttons/motors,
 // the rest migh be done with standart GPIO pins. In that case we need total of 8 pin which is ok.
 // The last possibility is to use 25 extenders, in that case one is for both input/output.
@@ -68,14 +68,20 @@ void set_all_motors_down()
   // Activate all motors.
   // Constantly check for buttons ON.
   // When this happens turn the corresponding motor of.
+  uint8_t response = 0;
   for(uint8_t adress: adresses1)
-    set_all_high(&WireM1, adress); 
+    set_all_high(&WireM1, adress);
 
-  for(uint8_t adress: adresses1)
+  // TODO rewrite for mor adresses 
+  while (response != 255)
   {
-    uint8_t response = read_pins(&WireB1, adress); 
-    if(response > 0)
-      set_pins(~response, &WireM1, adress);
+    for(uint8_t adress: adresses1)
+    {
+      response = read_pins(&WireB1, adress); 
+      if(response > 0)
+        set_pins(~response, &WireM1, adress);
+    }
+    delay(30);
   }
 }
 
@@ -145,7 +151,7 @@ void setup()
   // TODO do this for all extenders:
   for(uint8_t adress: adresses1)
   {
-    set_all_low(&WireM1, adress); // This is here so we know what we should except on the given extender 
+    set_all_low(&WireM1, adress); // Everything is set down so we know what to expect on extenders
     set_all_low(&WireB1, adress);
   }
 
