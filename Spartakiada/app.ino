@@ -33,15 +33,31 @@ void set_pins(uint8_t layout, SoftwareI2C *wire, uint8_t adress)
   wire->endTransmission();
 }
 
+void set_all_high(SoftwareI2C *wire, uint8_t adress)
+{
+  set_pins(0xFF, wire, adress);
+}
 
+void set_all_low(SoftwareI2C *wire, uint8_t adress)
+{
+  set_pins(0x0, wire, adress);
+}
+
+
+/**
+ * * Given a pointer to wire and adress, reads the corresponding extender and returns a 8 bit number.
+ * * Bits of the returned number represente the layout on the extender.
+ * 
+ * @param wire: pointer to SoftwareI2C object
+ * @param adress, uint8_t, adress of an extender that can be found on this wire.
+*/
 uint8_t read_pins(SoftwareI2C *wire, uint8_t adress)
 {
   uint8_t c = 0;
   wire->requestFrom(adress, 1);
   if(wire->available())    // slave may send less than requested
-  {
     c = wire->read();    // receive a byte as character
-  }
+
   return c;
 }
 
@@ -53,24 +69,63 @@ void set_all_motors_down()
   // Constantly check for buttons ON.
   // When this happens turn the corresponding motor of.
   for(uint8_t adress: adresses1)
-  {
-    set_pins(0xFF, &WireM1, adress); 
-  }
+    set_all_high(&WireM1, adress); 
 
   for(uint8_t adress: adresses1)
   {
     uint8_t response = read_pins(&WireB1, adress); 
     if(response > 0)
-    {
       set_pins(~response, &WireM1, adress);
-    }
   }
 }
 
-void copy_buttons()
-{
-  // Copies the information from buttons to motors.
 
+/**
+ * * Rotates all motors till the corresponding button fires.
+ * * Note that this dosen't mean motors will move exactly 360 deg.
+ * * If they are starting from down pos it will be approx 360 deg.
+ * * Otherwise they will just turn until the button is pushed.
+ * It might be a good idea to turn all motors down with [set_all_motors_down()]
+ * before calling this function.
+*/
+void do_one_cycle()
+{
+  for(uint8_t adress:adresses1)
+  set_all_high(&WireM1, adress);
+  
+  // TODO other motors
+  // Wait, otherwise if all were set down, buttons would fire
+  delay(3000);
+  for(uint8_t adress: adresses1)
+  {
+    uint8_t response = read_pins(&WireB1, adress); 
+    if(response > 0)
+      set_pins(~response, &WireM1, adress);
+  }
+}
+
+
+/**
+ * * Does the given number of cycles with all motors.
+ * 
+ * @param number_of_cycles: int, number of cycles to do
+ * @param start_down: bool, default to false, if true [set_all_motors_down()] called at the start.
+*/
+void do_cycles(int number_of_cycles, bool start_down = false)
+{
+  if (start_down)
+    set_all_motors_down();
+  
+  for(int i = 0; i < number_of_cycles; ++i)
+    do_one_cycle();  
+}
+
+
+/**
+ * * Reads bits from buttons and sets the same layouts to the motors.
+*/
+void copy_buttons_to_motors()
+{
   for(uint8_t adress: adresses1)
   {
     uint8_t response = read_pins(&WireB1, adress);
@@ -90,9 +145,10 @@ void setup()
   // TODO do this for all extenders:
   for(uint8_t adress: adresses1)
   {
-    set_pins(0x0, &WireM1, adress); // This is here so we know what we should except on the given extender 
-    set_pins(0x0, &WireB1, adress);
+    set_all_low(&WireM1, adress); // This is here so we know what we should except on the given extender 
+    set_all_low(&WireB1, adress);
   }
+
   Serial.println("Setup finished.");
   delay(5000);
 }
@@ -100,7 +156,7 @@ int c = 1;
 // TODO pretty much the whole loop.
 void loop()
 {
-  copy_buttons();
+  copy_buttons_to_motors();
   Serial.println("Copied.");
   set_pins(c, &WireM1, 0x20);
   c = c << 1;
