@@ -17,8 +17,8 @@
 SoftwareI2C WireM1; // First i2c communaction channel, others will folow :)
 SoftwareI2C WireB1;
 // ! It is assumed that adresses of M1 and B1 will be the same. 
-// !This is likely though if it isn't the case it won't work.
-uint8_t adresses1[] = {0x21};
+// ! This is likely though if it isn't the case it won't work.
+uint8_t adresses1[] = {0x20, 0x21, 0x22, 0x23};
 
 /**
 * * Sets pins according to the binary representation of [layout].
@@ -69,19 +69,29 @@ void set_all_motors_down()
   // Constantly check for buttons ON.
   // When this happens turn the corresponding motor of.
   uint8_t response = 0;
+  int delay_lenght = 30; // ms
+  int wait_for_motors = 24; // s
+  int from_start = 0;
   for(uint8_t adress: adresses1)
     set_all_high(&WireM1, adress);
 
-  // TODO rewrite for mor adresses 
-  while (response != 255)
+  // TODO rewrite for more wires 
+  bool all_buttons_high = false;
+  while (!all_buttons_high)
   {
+    all_buttons_high = true;
     for(uint8_t adress: adresses1)
     {
       response = read_pins(&WireB1, adress); 
       if(response > 0)
         set_pins(~response, &WireM1, adress);
+      if(response != 255)
+        all_buttons_high = false;
     }
-    delay(30);
+    delay(delay_lenght);
+    from_start += delay_lenght;
+    if(from_start/1000 > wait_for_motors)
+      break;
   }
 }
 
@@ -93,11 +103,13 @@ void set_all_motors_down()
  * * Otherwise they will just turn until the button is pushed.
  * It might be a good idea to turn all motors down with [set_all_motors_down()]
  * before calling this function.
+ * ! This function won't end if all buttons aren't fireing.
+ * TODO solve the problem on the previous line.
 */
-void do_one_cycle()
+void all_do_one_cycle()
 {
   for(uint8_t adress:adresses1)
-  set_all_high(&WireM1, adress);
+    set_all_high(&WireM1, adress);
   
   // TODO other motors
   // Wait, otherwise if all were set down, buttons would fire
@@ -117,13 +129,13 @@ void do_one_cycle()
  * @param number_of_cycles: int, number of cycles to do
  * @param start_down: bool, default to false, if true [set_all_motors_down()] called at the start.
 */
-void do_cycles(int number_of_cycles, bool start_down = false)
+void all_do_cycles(int number_of_cycles, bool start_down = false)
 {
   if (start_down)
     set_all_motors_down();
   
   for(int i = 0; i < number_of_cycles; ++i)
-    do_one_cycle();  
+    all_do_one_cycle();  
 }
 
 
@@ -137,6 +149,39 @@ void copy_buttons_to_motors()
     uint8_t response = read_pins(&WireB1, adress);
     Serial.println(response); 
     set_pins(response, &WireM1, adress);
+  }
+}
+
+
+void even_do_cycles(int number_of_cycles, bool start_down = false)
+{
+    if (start_down)
+      set_all_motors_down();
+    
+  for(int i = 0; i < number_of_cycles; ++i)
+    even_do_one_cycle();
+}
+
+
+void even_do_cycle()
+{
+  for(uint8_t adress:adresses1)
+      set_pin(0x55,&WireM1, adress);
+  
+  // TODO other motors
+  // Wait, otherwise if all were set down, buttons would fire
+  delay(3000);
+  for(uint8_t adress: adresses1)
+  {
+    uint8_t response = read_pins(&WireB1, adress);
+    if(response > 0)
+    {
+      // Because of this only motors with unpushed buttons (0) will work.
+      response = ~response
+      // Gets rid of odd motors.
+      response = response & 0xAA;
+      set_pins(response, &WireM1, adress);
+    }
   }
 }
 
@@ -162,12 +207,13 @@ int c = 1;
 // TODO pretty much the whole loop.
 void loop()
 {
-  copy_buttons_to_motors();
-  Serial.println("Copied.");
-  set_pins(c, &WireM1, 0x20);
-  c = c << 1;
-  if(c == 16) c=1;
-  delay(500);
+  Serial.println("Sestavicka se vsema zacina!")
+  all_do_cycles(2, start_down=true);
+  Serial.println("Sestavicka se vsema skoncila");
+  delay(10000);
+  Serial.println("Sestavicka se sudymi zacina");
+  
+  delay(10000);
    // Nejaka ta sestava
    // Kdyz umime detekovat, kdy je motor dole, muzeme sestavy zadavat jako pocet otoceni
    // Popripade muzeme zadavat casy, za jak dlouho se ma co pustit.

@@ -1,10 +1,10 @@
 #include <SoftwareI2C.h>
 
 
-#define ADR (0x20)
+#define ADR (0x21)
 // Ports are changable because of SoftwareI2C
-#define SDA 3
-#define SCL 2
+#define SDA 12
+#define SCL 13
  
 #include "SoftwareI2C.h"
 SoftwareI2C WireS;
@@ -59,9 +59,10 @@ void loop()
   Serial.println();
 
   delay(500);
-}
-*/
+}*/
 
+
+/*
 // Reads pin 4 and sets the same value on pin 3.
 void setup() 
 {
@@ -94,6 +95,34 @@ void loop()
       Serial.println("0 on pin 3");
     }    
   }
+
+  delay(500);
+}*/
+
+
+void setup() 
+{
+  Serial.begin(115200);
+  WireS.begin(SDA, SCL); // sda, scl
+
+  WireS.beginTransmission(ADR);
+  WireS.write(0xFF); // 10101010
+  WireS.endTransmission();
+}
+void loop() 
+{
+  WireS.requestFrom(ADR, 1);
+  while(WireS.available())    // slave may send less than requested
+  {
+    byte c = WireS.read();    // receive a byte as character
+    Serial.println(c);
+    while(c>0)
+    {
+      Serial.print(c&1);
+      c = c >> 1;
+    }
+  }
+  Serial.println();
 
   delay(500);
 }
