@@ -45,7 +45,8 @@ void set_all_low(SoftwareI2C *wire, uint8_t adress)
 
 
 /**
- * * Given a pointer to wire and adress, reads the corresponding extender and returns a 8 bit number.
+ * * Given the pointer to a wire and adress, 
+ * * reads the corresponding extender and returns a 8 bit number.
  * * Bits of the returned number represente the layout on the extender.
  * 
  * @param wire: pointer to SoftwareI2C object
@@ -163,10 +164,10 @@ void even_do_cycles(int number_of_cycles, bool start_down = false)
 }
 
 
-void even_do_cycle()
+void even_do_one_cycle()
 {
   for(uint8_t adress:adresses1)
-      set_pin(0x55,&WireM1, adress);
+      set_pins(0x55,&WireM1, adress);
   
   // TODO other motors
   // Wait, otherwise if all were set down, buttons would fire
@@ -177,12 +178,30 @@ void even_do_cycle()
     if(response > 0)
     {
       // Because of this only motors with unpushed buttons (0) will work.
-      response = ~response
+      response = ~response; // ! COMMENT THIS LINE FOR GND CONNECTED BUTTON.
       // Gets rid of odd motors.
-      response = response & 0xAA;
+      response = response & 0x55;
       set_pins(response, &WireM1, adress);
     }
   }
+}
+
+
+/**
+ * Prints bits of 8 bit number on one line.
+ * 
+ * @param number, uint8_t
+*/
+void print_bits(uint8_t number)
+{
+  for(int i = 0; i < 8; ++i)
+  {
+    // Reminder of div 2 gives the last bit.
+    // Shift then moves the next to the last position.
+    Serial.print(number % 2);
+    number = number << 1;
+  }
+  Serial.println(number);
 }
 
 
@@ -207,14 +226,21 @@ int c = 1;
 // TODO pretty much the whole loop.
 void loop()
 {
-  Serial.println("Sestavicka se vsema zacina!")
-  all_do_cycles(2, start_down=true);
+  Serial.println("Co ctu na pinech: ");
+  for(uint8_t adress: adresses1)
+  {
+    uint8_t response = read_pins(&WireB1, adress);
+    Serial.print("Response in dec: ");
+    Serial.println(response);
+    Serial.print("Response in bin: ");
+    print_bits(response);
+  }
+  Serial.println("Sestavicka se vsema zacina!");
+  all_do_cycles(2, true);
   Serial.println("Sestavicka se vsema skoncila");
   delay(10000);
   Serial.println("Sestavicka se sudymi zacina");
+  even_do_cycles(2 , true);
   
   delay(10000);
-   // Nejaka ta sestava
-   // Kdyz umime detekovat, kdy je motor dole, muzeme sestavy zadavat jako pocet otoceni
-   // Popripade muzeme zadavat casy, za jak dlouho se ma co pustit.
 }
