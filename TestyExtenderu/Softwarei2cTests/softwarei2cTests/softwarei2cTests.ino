@@ -1,14 +1,13 @@
 #include <SoftwareI2C.h>
 
 
-#define ADR (0x21)
+#define ADR (0x20)
 // Ports are changable because of SoftwareI2C
-#define SDA 12
-#define SCL 13
+#define SDA 13
+#define SCL 12
  
-#include "SoftwareI2C.h"
 SoftwareI2C WireS;
-
+//
 /*
 // Blink on pin 2.
 void setup() 
@@ -99,7 +98,7 @@ void loop()
   delay(500);
 }*/
 
-
+/*
 void setup() 
 {
   Serial.begin(115200);
@@ -125,4 +124,105 @@ void loop()
   Serial.println();
 
   delay(500);
+}*/
+
+
+/*
+// Blink all pins.
+void setup() 
+{
+  Serial.begin(115200);
+  WireS.begin(SDA, SCL); // sda, scl
+}
+ 
+void loop() 
+{
+  WireS.beginTransmission(ADR);
+  WireS.write(0xFF);
+  WireS.endTransmission();
+  Serial.println("1 on pins");
+  delay(5000);
+  /*WireS.beginTransmission(ADR);
+  WireS.write(0x0);
+  WireS.endTransmission();
+  Serial.println("0 on pins");
+  delay(5000);
+}*/
+
+
+// Test that motors and buttons work..
+SoftwareI2C Wire1;
+SoftwareI2C Wire2;
+void setup() 
+{
+  Serial.begin(115200);
+  Wire1.begin(2, 3); // sda, scl
+  Wire2.begin(4, 5);
+
+  uint8_t epic = 0x0;
+
+  Wire1.beginTransmission(0x21);
+  Wire1.write(epic);
+  Wire1.endTransmission();
+
+  Wire1.beginTransmission(0x22);
+  Wire1.write(0x00);
+  Wire1.endTransmission();
+
+  Wire1.beginTransmission(0x23);
+  Wire1.write(epic);
+  Wire1.endTransmission();
+
+  Wire1.beginTransmission(0x20);
+  Wire1.write(epic);
+  Wire1.endTransmission();
+  //Serial.println("1 on pins");
+
+  Wire2.beginTransmission(0x22);
+  Wire2.write(0xFF);
+  Wire2.endTransmission();
+
+  Wire2.beginTransmission(0x23);
+  Wire2.write(0xFF);
+  Wire2.endTransmission();
+  delay(3000);
+}
+ 
+void loop() 
+{
+  Serial.println("22:");
+  Wire2.requestFrom(0x22, 1);
+  while(Wire2.available())    // slave may send less than requested
+  {
+    byte c = Wire2.read();    // receive a byte as character
+    Serial.println(c);
+    byte number[8] = {0};
+    for(int i = 0; i < 8; ++i)
+    {
+      number[i] = c&1;
+      c = c >> 1;
+    }
+    for(int i = 7; i >= 0; --i)
+      Serial.print(number[i]);
+  }
+  Serial.println();
+  Serial.println("23:");
+  delay(30);
+  Wire2.requestFrom(0x23, 1);
+  while(Wire2.available())    // slave may send less than requested
+  {
+    byte c = Wire2.read();    // receive a byte as character
+    Serial.println(c);
+    byte number[8] = {0};
+    for(int i = 0; i < 8; ++i)
+    {
+      number[i] = c&1;
+      c = c >> 1;
+    }
+    for(int i = 7; i >= 0; --i)
+      Serial.print(number[i]);
+  }
+  Serial.println();
+  Serial.println("----------------------");
+  delay(1000);
 }
