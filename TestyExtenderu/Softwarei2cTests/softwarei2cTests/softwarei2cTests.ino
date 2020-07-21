@@ -161,23 +161,25 @@ void setup()
 
   uint8_t epic = 0x0;
 
+  Wire1.beginTransmission(0x20);
+  Wire1.write(epic);
+  Wire1.endTransmission();
+  //Serial.println("1 on pins");
+
   Wire1.beginTransmission(0x21);
   Wire1.write(epic);
   Wire1.endTransmission();
 
   Wire1.beginTransmission(0x22);
-  Wire1.write(0x00);
+  Wire1.write(0x0);
   Wire1.endTransmission();
 
   Wire1.beginTransmission(0x23);
   Wire1.write(epic);
   Wire1.endTransmission();
 
-  Wire1.beginTransmission(0x20);
-  Wire1.write(epic);
-  Wire1.endTransmission();
-  //Serial.println("1 on pins");
 
+  // Buttons
   Wire2.beginTransmission(0x22);
   Wire2.write(0xFF);
   Wire2.endTransmission();
