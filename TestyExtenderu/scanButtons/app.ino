@@ -8,52 +8,6 @@ SoftwareI2C Wire2;
 
 uint8_t Adresses[] = {0x20, 0x21, 0x22, 0x23};
 
-// Sets everything up
-// Motors should all be low
-// Buttons high so we can than detect buttons with zeros.
-void setup() 
-{
-  Serial.begin(115200);
-  Wire1.begin(2, 3); // sda, scl
-  Wire2.begin(4, 5);
-
-  
-  Wire1.beginTransmission(0x20); // 32
-  Wire1.write(0x0);
-  Wire1.endTransmission();
-
-  Wire1.beginTransmission(0x21); // 33
-  Wire1.write(0x0);
-  Wire1.endTransmission();
-
-  Wire1.beginTransmission(0x22);
-  Wire1.write(0x0);
-  Wire1.endTransmission();
-
-  Wire1.beginTransmission(0x23);
-  Wire1.write(0x0);
-  Wire1.endTransmission();
-
-  //Serial.println("1 on pins");
-
-  Wire2.beginTransmission(0x0);
-  Wire2.write(0xFF);
-  Wire2.endTransmission();
-
-  Wire2.beginTransmission(0x21);
-  Wire2.write(0xFF);
-  Wire2.endTransmission();
-
-  Wire2.beginTransmission(0x22);
-  Wire2.write(0xFF);
-  Wire2.endTransmission();
-
-  Wire2.beginTransmission(0x23);
-  Wire2.write(0xFF);
-  Wire2.endTransmission();
-  delay(3000);
-}
-
 void check_motor(uint8_t adress, uint8_t layout)
 {
   Wire1.beginTransmission(adress);
@@ -120,14 +74,63 @@ void check_motor(uint8_t adress, uint8_t layout)
   }
 }
 
-void loop()
+
+
+// Sets everything up
+// Motors should all be low
+// Buttons high so we can than detect buttons with zeros.
+void setup() 
 {
+  Serial.begin(115200);
+  Wire1.begin(2, 3); // sda, scl
+  Wire2.begin(4, 5);
+
+  
+  Wire1.beginTransmission(0x20); // 32
+  Wire1.write(0x0);
+  Wire1.endTransmission();
+
+  Wire1.beginTransmission(0x21); // 33
+  Wire1.write(0x0);
+  Wire1.endTransmission();
+
+  Wire1.beginTransmission(0x22);
+  Wire1.write(0x0);
+  Wire1.endTransmission();
+
+  Wire1.beginTransmission(0x23);
+  Wire1.write(0x0);
+  Wire1.endTransmission();
+
+  //Serial.println("1 on pins");
+
+  Wire2.beginTransmission(0x0);
+  Wire2.write(0xFF);
+  Wire2.endTransmission();
+
+  Wire2.beginTransmission(0x21);
+  Wire2.write(0xFF);
+  Wire2.endTransmission();
+
+  Wire2.beginTransmission(0x22);
+  Wire2.write(0xFF);
+  Wire2.endTransmission();
+
+  Wire2.beginTransmission(0x23);
+  Wire2.write(0xFF);
+  Wire2.endTransmission();
+  delay(3000);
+
+  Serial.println("Testing starts");
+
+
   uint8_t layout = 0x1;
   for(int i = 0; i < 8; ++i)
   {
 
     for(uint8_t adress : Adresses)
     {
+      Serial.println("Testing for motor: ");
       Serial.print("Layout: ");
       Serial.println(i);
       Serial.print("Adress:");
@@ -137,4 +140,10 @@ void loop()
     }
     layout = layout<<1;
   }
+}
+
+
+void loop()
+{
+  delay(100000);
 }
