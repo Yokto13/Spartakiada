@@ -46,7 +46,8 @@ void check_motor(uint8_t adress, uint8_t layout)
               Serial.print("Layout: ");
               Serial.println(i);
               Serial.print("Adress:");
-              Serial.println(adress);
+              Serial.print(adress/16);
+              Serial.println(adress - (adress/16)*16);
               Serial.println("--------------");
               should_exit = true;
               break;
@@ -134,7 +135,8 @@ void setup()
       Serial.print("Layout: ");
       Serial.println(i);
       Serial.print("Adress:");
-      Serial.println(adress);
+      Serial.print(adress/16);
+      Serial.println(adress - (adress/16)*16);
       check_motor(adress, layout);
       delay(500);
     }
