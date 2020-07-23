@@ -18,11 +18,11 @@ void setup()
   Wire2.begin(4, 5);
 
   
-  Wire1.beginTransmission(0x20);
+  Wire1.beginTransmission(0x20); // 32
   Wire1.write(0x0);
   Wire1.endTransmission();
 
-  Wire1.beginTransmission(0x21);
+  Wire1.beginTransmission(0x21); // 33
   Wire1.write(0x0);
   Wire1.endTransmission();
 
@@ -98,6 +98,7 @@ void check_motor(uint8_t adress, uint8_t layout)
               break;
             }
             c = c >> 1;
+            b = b >> 1;
           }
         }
         if(should_exit)
@@ -123,7 +124,7 @@ void loop()
     for(uint8_t adress : Adresses)
     {
       Serial.print("Layout: ");
-      Serial.println(layout);
+      Serial.println(i);
       Serial.print("Adress:");
       Serial.println(adress);
       check_motor(adress, layout);
