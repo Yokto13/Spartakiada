@@ -150,6 +150,7 @@ void loop()
 }*/
 
 
+/*
 // Test that motors and buttons work..
 SoftwareI2C Wire1;
 SoftwareI2C Wire2;
@@ -162,7 +163,7 @@ void setup()
   uint8_t epic = 0x0;
 
   Wire1.beginTransmission(0x20);
-  Wire1.write(epic);
+  Wire1.write(0x0);
   Wire1.endTransmission();
   //Serial.println("1 on pins");
 
@@ -227,4 +228,75 @@ void loop()
   Serial.println();
   Serial.println("----------------------");
   delay(1000);
+}*/
+
+
+
+SoftwareI2C Wire1;
+void setup() 
+{
+  Serial.begin(115200);
+  Wire1.begin(2, 3); // sda, scl
+
+  uint8_t epic = 0x0;
+
+  Wire1.beginTransmission(0x20);
+  Wire1.write(epic);
+  Wire1.endTransmission();
+  //Serial.println("1 on pins");
+
+  Wire1.beginTransmission(0x21);
+  Wire1.write(epic);
+  Wire1.endTransmission();
+
+  Wire1.beginTransmission(0x22);
+  Wire1.write(epic);
+  Wire1.endTransmission();
+
+  Wire1.beginTransmission(0x23);
+  Wire1.write(epic);
+  Wire1.endTransmission();
+}
+
+void set_one_extender(SoftwareI2C *wire, uint8_t layout, uint8_t adress, int d)
+{
+  wire->beginTransmission(adress);
+  wire->write(layout);
+  wire->endTransmission();
+  delay(d);
+  wire->beginTransmission(adress);
+  wire->write(0x0);
+  wire->endTransmission();
+}
+ 
+void loop() 
+{
+  int d = 30000;
+  uint8_t c = 1;
+  for(int i = 0; i< 8; ++i)
+  {
+    set_one_extender(&Wire1, c, 0x20, d);
+    c = c << 1;
+  }
+
+  c = 1;
+  for(int i = 0; i< 8; ++i)
+  {
+    set_one_extender(&Wire1, c, 0x21, d);
+    c = c << 1;
+  }
+
+  c = 1;
+  for(int i = 0; i< 8; ++i)
+  {
+    set_one_extender(&Wire1, c, 0x22, d);
+    c = c << 1;
+  }
+
+  c = 1;
+  for(int i = 0; i< 8; ++i)
+  {
+    set_one_extender(&Wire1, c, 0x23, d);
+    c = c << 1;
+  }
 }

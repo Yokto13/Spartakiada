@@ -17,7 +17,7 @@
 SoftwareI2C WireM1; // First i2c communaction channel, others will folow :)
 SoftwareI2C WireB1;
 // ! It is assumed that adresses of M1 and B1 will be the same. 
-// !This is likely though if it isn't the case it won't work.
+// ! This is likely though if it isn't the case it won't work.
 uint8_t adresses1[] = {0x21};
 
 /**
