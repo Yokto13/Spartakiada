@@ -15,7 +15,7 @@ void check_motor(uint8_t adress, uint8_t layout)
   Wire1.endTransmission();
   int time_from_start = 0;
   bool should_exit = false;
-  while (time_from_start < 20000)
+  while (time_from_start < 30000)
   {
     byte mem[4]; 
     for(int j = 0; j < 4; ++j)
