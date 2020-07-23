@@ -113,6 +113,8 @@ void check_motor(uint8_t adress, uint8_t layout)
   Wire1.beginTransmission(adress);
   Wire1.write(0x0);
   Wire1.endTransmission();
+  if(!should_exit)
+    Serial.println("Nothing was detected for this motor.");
 }
 
 void loop()
