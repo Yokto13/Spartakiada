@@ -85,11 +85,11 @@ void check_motor(uint8_t adress, uint8_t layout)
         {
           for(int i = 7; i >= 0; --i)
           {
-            int bit1 = c&1;
+            int bit1 = c&1; // Gets the last bit. 
             int bit2 = b&1;
             if(bit1 != bit2)
             {
-              Serial.print("1 detected at pin: ");
+              Serial.print("Layout: ");
               Serial.println(i);
               Serial.print("Adress:");
               Serial.println(adress);
@@ -114,7 +114,10 @@ void check_motor(uint8_t adress, uint8_t layout)
   Wire1.write(0x0);
   Wire1.endTransmission();
   if(!should_exit)
+  {
     Serial.println("Nothing was detected for this motor.");
+    Serial.println("--------------");    
+  }
 }
 
 void loop()
@@ -130,7 +133,7 @@ void loop()
       Serial.print("Adress:");
       Serial.println(adress);
       check_motor(adress, layout);
-      delay(100);
+      delay(500);
     }
     layout = layout<<1;
   }
