@@ -231,14 +231,17 @@ void loop()
 }*/
 
 
-
+// 2 squares.
 SoftwareI2C Wire1;
+SoftwareI2C Wire3;
 void setup() 
 {
   Serial.begin(115200);
   Wire1.begin(2, 3); // sda, scl
+  Wire3.begin(8,9);
 
-  uint8_t epic = 0x0;
+  uint8_t epic = 0xFF;
+  uint8_t neco = 0xFF;
 
   Wire1.beginTransmission(0x20);
   Wire1.write(epic);
@@ -254,8 +257,25 @@ void setup()
   Wire1.endTransmission();
 
   Wire1.beginTransmission(0x23);
-  Wire1.write(epic);
+  Wire1.write(neco);
   Wire1.endTransmission();
+
+  Wire3.beginTransmission(0x20);
+  Wire3.write(neco);
+  Wire3.endTransmission();
+  //Serial.println("1 on pins");
+
+  Wire3.beginTransmission(0x21);
+  Wire3.write(neco);
+  Wire3.endTransmission();
+
+  Wire3.beginTransmission(0x22);
+  Wire3.write(neco);
+  Wire3.endTransmission();
+
+  Wire3.beginTransmission(0x23);
+  Wire3.write(neco);
+  Wire3.endTransmission();
 }
 
 void set_one_extender(SoftwareI2C *wire, uint8_t layout, uint8_t adress, int d)
@@ -271,6 +291,7 @@ void set_one_extender(SoftwareI2C *wire, uint8_t layout, uint8_t adress, int d)
  
 void loop() 
 {
+  /*
   int d = 30000;
   uint8_t c = 1;
   for(int i = 0; i< 8; ++i)
@@ -299,4 +320,5 @@ void loop()
     set_one_extender(&Wire1, c, 0x23, d);
     c = c << 1;
   }
+  */
 }

@@ -1,5 +1,5 @@
 {
     "board": "arduino:avr:uno",
-    "port": "COM11",
+    "port": "/dev/ttyACM0",
     "sketch": "scan.ino"
 }
